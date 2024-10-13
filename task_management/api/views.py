@@ -19,50 +19,43 @@ from task_management.api.serializers import GetAllTaskSerializer, GetSingleTaskS
 from task_management.models import Task
 
 
+
 @api_view(['POST'])
 def create_task_api(request):
-    """
-    Create a new task.
-
-    :param request:
-        Django request parameter.
-    :return:
-        Created task or error.
-    """
+    """Create a new task API."""
+    
     if request.method == "POST":
-        body = request.data
+        body = request.data        
         serializer = TaskSerializer(data=body)
         
         if serializer.is_valid():
-            task = Task.objects.create(
-                title=serializer.validated_data.get("title"),
-                description=serializer.validated_data.get("description"),
-                due_date=serializer.validated_data.get("due_date"),
-     
-            )
-
-            response_data = {
+            task = serializer.save()  # Save the task using the serializer
+            return Response({
                 "status": "success",
                 "message": "Task created successfully.",
                 "task": TaskSerializer(task).data,
                 "task_id": task.id
-            }
-
-            return Response(response_data, status=status.HTTP_201_CREATED)
+            }, status=status.HTTP_201_CREATED)
         else:
+            print('Serializer errors:', serializer.errors)  # Log serializer errors
             return Response({
                 "status": "error",
                 "message": "Invalid data",
                 "errors": serializer.errors
             }, status=status.HTTP_400_BAD_REQUEST)
-        
 
 @api_view(['GET'])
 def get_all_task_api(request):
     all_tasks = Task.objects.all()
-    serializer_data = GetAllTaskSerializer(all_tasks, many=True).data
+    all_task_serializer = GetAllTaskSerializer(all_tasks, many=True).data
+    data = json.dumps({
+            "status": "success",
+            "message": "Case data retrieved successfully!",
+            'data': all_task_serializer
 
-    return Response(json.dumps(serializer_data), status=status.HTTP_200_OK)
+        })
+
+    return Response(data, status=status.HTTP_200_OK)
 
 
 @api_view(['GET'])
