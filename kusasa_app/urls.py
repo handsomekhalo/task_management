@@ -21,6 +21,7 @@ from system_management import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    
     path('', views.login_view, name='login_view'),
     path('system_management/', include('system_management.urls')),
 

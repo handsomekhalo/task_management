@@ -1,7 +1,6 @@
 /*global CREATE_TASK, CSRF_TOKEN*/
 
 $(document).ready(function () {
-    console.log('executing');
 
     $('#create-task-form').on('submit', function (e) {
         console.log('js');
@@ -41,9 +40,20 @@ $(document).ready(function () {
                 try {
                     // Handle success response
                     console.log('Task created successfully:', response);
+
                     // Optionally, close the modal
                     $('#exampleModal').modal('hide');
-                    // Optionally, refresh or update the task list on the page
+
+                    // SweetAlert Success
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success!',
+                        text: 'Task created successfully.',
+                        confirmButtonText: 'OK'
+                    }).then(function() {
+                        // Optionally, reload or update task list on the page
+                        location.reload();
+                    });
                 } catch (e) {
                     console.error('Error handling success response:', e);
                 }
@@ -52,11 +62,15 @@ $(document).ready(function () {
                 // Handle error response
                 console.log('in error');
                 console.error(`Error: ${status}, ${error}`);
-                // Optionally display an error message to the user
-                alert('Failed to create task. Please try again.');
+
+                // SweetAlert Error
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error!',
+                    text: 'Failed to create task. Please try again.',
+                    confirmButtonText: 'OK'
+                });
             }
         });
     });
 });
-
-

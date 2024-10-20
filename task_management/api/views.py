@@ -14,9 +14,12 @@ from django.db.models import Count,Sum
 from django.db.models import Q
 from django.db.models.functions import TruncMonth,Coalesce
 from rest_framework.decorators import api_view
-
 from task_management.api.serializers import GetAllTaskSerializer, GetSingleTaskSerializer, TaskSerializer, UpdateTaskSerializer
 from task_management.models import Task
+from rest_framework.decorators import api_view, authentication_classes, permission_classes
+from rest_framework.authentication import TokenAuthentication
+from rest_framework.permissions import IsAuthenticated
+
 
 
 
@@ -69,33 +72,42 @@ def get_task_by_id_api(request):
     if request.method == 'GET':
         try:
             body = json.loads(request.body)
+
+            print('body',body)
             task_id = body.get('task_id')
 
             if not task_id:
-                return Response({
+                return Response(jso.dumps({
                     'status': "error",
                     'message': "task_id is required"
-                }, status=status.HTTP_400_BAD_REQUEST)
+                }), status=status.HTTP_400_BAD_REQUEST)
 
             # Get the task by ID
             try:
                 task = Task.objects.get(id=task_id)
             except Task.DoesNotExist:
-                return Response({
+                return Response(json.dumps({
                     'status': "error",
                     'message': "Task not found"
-                }, status=status.HTTP_404_NOT_FOUND)
+                }), status=status.HTTP_404_NOT_FOUND)
 
             # Serialize and return the task data
             single_task_serializer = GetSingleTaskSerializer(task)
 
-            return Response(single_task_serializer.data, status=status.HTTP_200_OK)
+            data = json.dumps({
+            "status": "success",
+            "message": "Case data retrieved successfully!",
+            'data': single_task_serializer
+
+        })
+
+            return Response(data, status=status.HTTP_200_OK)
 
         except json.JSONDecodeError:
-            return Response({
+            return Response(json.dumps({
                 'status': "error",
                 'message': "Invalid JSON format"
-            }, status=status.HTTP_400_BAD_REQUEST)
+            }), status=status.HTTP_400_BAD_REQUEST)
     else:
         return Response({
             'status': "error",
@@ -112,33 +124,37 @@ def update_task_api(request):
     :return: JSON response with the updated task data or error.
     """
     if request.method == 'PUT':
-        # Extract task_id from the request body
+        print('inside API')
         body = json.loads(request.body)
-        task_id = body.get('task_id')
+        print('body',body)
+        id = body.get('task_id')
+        print('task_id',id)
 
         # Check if task_id is provided
-        if not task_id:
+        if not id:
             return Response({"status": "error", "message": "Task ID is required"}, status=status.HTTP_400_BAD_REQUEST)
 
         # Find the task by id
         try:
-            task = Task.objects.get(id=task_id)
+            task = Task.objects.get(id=id)
+            print('TASK IS TASK', task)
         except Task.DoesNotExist:
+            print('non exists')
             return Response({"status": "error", "message": "Task not found"}, status=status.HTTP_404_NOT_FOUND)
 
         # Validate and update task data
-        serializer = UpdateTaskSerializer(task, data=request.data)
+        serializer = UpdateTaskSerializer(task, data=body)
         if serializer.is_valid():
             serializer.save()
-            return Response({
+            return Response(json.dumps({
                 'status': 'success',
                 'message': 'Task updated successfully',
-                'task': serializer.data
-            }, status=status.HTTP_200_OK)
+                'data': serializer.data
+            }), status=status.HTTP_200_OK)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-@api_view(['DELETE'])
+@api_view(['POST'])
 def delete_task_api(request):
     """
     Delete a task by ID, with the task_id received from the request body.
@@ -146,7 +162,7 @@ def delete_task_api(request):
     :param request: Django request parameter with task_id in the body.
     :return: JSON response confirming deletion or error.
     """
-    if request.method == 'DELETE':
+    if request.method == 'POST':
         # Extract task_id from the request body
         body = json.loads(request.body)
         task_id = body.get('task_id')
