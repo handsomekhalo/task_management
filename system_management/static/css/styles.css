@@ -38,3 +38,22 @@
     background:#102F5D;
     color: #fff; 
   }
+
+  .shrink-btn {  
+    background-color:#102F5D;
+    border-radius: 6px;
+    cursor: pointer;
+    box-shadow: 2px 2px 4px rgb(0 0 0 / 50%);   
+    transform: translateY(-50%) translateX(-8px);
+    opacity: 1;
+    pointer-events: all; 
+    transition: 0.3s;
+ }
+
+ .shrink-btn i {
+   transition: 0.3s;
+ }
+ 
+ .shrink-btn:hover {
+   background-color: var(--main-color);
+ }

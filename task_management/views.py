@@ -107,7 +107,7 @@ def update_task(request):
 
 
 @csrf_exempt  # Only if you want to bypass CSRF protection (not recommended)
-def remove_task(request):
+def delete_task(request):
     """Update task details via POST request."""
     if request.method == "POST":
         try:
@@ -149,60 +149,3 @@ def remove_task(request):
 
     else:
         return JsonResponse({'error': 'Invalid request method'}, status=400)
-
-
-# def delete_task(request):
-#     print('Inside delete_task function')
-    
-#     if request.method == "POST":
-#         try:
-#             # Parse JSON data from the request body
-#             data = json.loads(request.body)
-#             print('Received data:', data)
-
-#             # Get the task_id from the parsed data
-#             task_id = data.get('task_id')
-#             print('Task ID:', task_id)
-
-#             if not task_id:
-#                 return JsonResponse({'error': 'Task ID is missing'}, status=400)
-
-#             # Optionally extract the token if needed
-#             token = request.session.get('token')
-
-#             # token = data.get('token')
-#             print('Token:', token)
-
-#             if not token:
-#                 return JsonResponse({'error': 'Authentication token is missing'}, status=401)
-
-#             # Construct the API URL for deleting the task
-#             url = f"{host_url(request)}{reverse_lazy('delete_task_api')}"
-#             print('API URL for task deletion:', url)
-
-#             # Prepare headers for the API call, including authorization
-#             headers = {
-#                 'Content-Type': 'application/json',
-#                 "Authorization": f"Token {token}"
-#             }
-#             print('Headers for API call:', headers)
-
-#             # Make an API call to delete the task using the provided task_id and token
-#             response_data = api_connection(method="post", url=url, headers=headers, data=json.dumps({'task_id': task_id}))
-#             print('API Response:', response_data)
-
-#             if response_data.get('success'):
-#                 return JsonResponse({'message': 'Task deleted successfully'}, status=200)
-#             else:
-#                 error_message = response_data.get('error', 'Unknown error occurred')
-#                 return JsonResponse({'error': error_message}, status=500)
-
-#         except json.JSONDecodeError as e:
-#             print('JSONDecodeError:', e)
-#             return JsonResponse({'error': 'Invalid JSON format'}, status=400)
-
-#         except Exception as e:
-#             print('Unexpected error:', e)
-#             return JsonResponse({'error': f"An error occurred: {str(e)}"}, status=500)
-#     else:
-#         return JsonResponse({'error': 'Invalid request method'}, status=405)

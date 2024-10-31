@@ -30,6 +30,8 @@
   <!-- Modal -->
 
   <div class="container mt-3 ">
+
+    <div class=" container mb-3">
     <div class="card mb-4 p-5  ">
         <div class="btn-container">
             <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createTaskModal">
@@ -43,6 +45,7 @@
             </button> 
         </div>
     </div>
+  </div>
 </div>
 
 <!-- Create Task Modal -->
@@ -211,7 +214,7 @@
       const CSRF_TOKEN = "{{ csrf_token }}";
       const CREATE_TASK = "{% url 'create_task' %}"
       const EDIT_TASK = "{% url 'update_task' %}"
-      const DELETE_TASK = "{% url 'remove_task' %}"
+      const DELETE_TASK = "{% url 'delete_task' %}"
 
     </script>
     </body>
